@@ -1,5 +1,3 @@
-import discord
-
 async def snipe(message, deleted_embeds):
     if message.channel.id in deleted_embeds:
         await message.channel.send(embed=deleted_embeds[message.channel.id])

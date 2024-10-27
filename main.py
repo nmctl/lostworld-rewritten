@@ -2,6 +2,7 @@ import discord
 import json
 import utilities
 import fun
+import importlib
 
 global deleted_embed
 
@@ -21,7 +22,10 @@ config = load_config()
 prefix = config['prefix']
 token = config['token']
 logging_channel = config['logging_channel_id']
+bot_owner_id = config['bot_owner_id']
 pf = prefix
+
+print(bot_owner_id)
 
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
@@ -34,6 +38,7 @@ async def on_ready():
     await client.change_presence(status=discord.Status.online, activity=game)
     latency = round(client.latency * 1000, 2)
     print(f'Ping: {latency} ms')
+    print(bot_owner_id)
 
 # this too
 @client.event
@@ -43,20 +48,21 @@ async def on_message(message):
             
             # split the message
             content = message.content
-            parts = content.split()
+            # parts = content.split()
 
             if message.author.id in blacklisted_users:
                 return
         
-            elif message.content.startswith(f'{pf}snipe'):
+            elif content.startswith(f'{pf}snipe'):
                 await fun.snipe(message, deleted_embeds)
 
-            elif message.content.startswith(f"{pf}ping"):
+            elif content.startswith(f"{pf}ping"):
                 await utilities.ping(message, client)
 
-            elif message.content.startswith(f"{pf}annoy"):
+            elif content.startswith(f"{pf}annoy"):
                 target = message.mentions[0]
                 await fun.annoy(message, target)
+
 
     except discord.RateLimited:
         print('Rate limit detected')
