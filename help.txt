@@ -1,0 +1,2 @@
+{pf}ping: Get the latency of the bot
+{pf}annoy: DM someone 50 times with the message of your choice

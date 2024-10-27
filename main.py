@@ -2,7 +2,7 @@ import discord
 import json
 import utilities
 import fun
-import importlib
+from mcrcon import MCRcon
 
 global deleted_embed
 
@@ -23,7 +23,18 @@ prefix = config['prefix']
 token = config['token']
 logging_channel = config['logging_channel_id']
 bot_owner_id = config['bot_owner_id']
+rcon_prefix = config['rcon_prefix']
 pf = prefix
+rpf = rcon_prefix
+
+# rcon stuff
+rcon_host = config['rcon_host']
+rcon_port = int(config['rcon_port'])
+rcon_password = config['rcon_password']
+
+# create an MCRcon instance
+mcr = MCRcon(rcon_host, rcon_password, rcon_port)
+mcr = MCRcon(host=rcon_host, password=rcon_password, port=rcon_port)
 
 print(bot_owner_id)
 
@@ -38,12 +49,20 @@ async def on_ready():
     await client.change_presence(status=discord.Status.online, activity=game)
     latency = round(client.latency * 1000, 2)
     print(f'Ping: {latency} ms')
-    print(bot_owner_id)
 
 # this too
 @client.event
 async def on_message(message):
     try:
+
+        if message.content.startswith(rpf) and message.author.id == bot_owner_id:
+            mcr.connect()
+            response = mcr.command(message.content)
+            print(response)
+            await message.channel.send(response)
+            mcr.disconnect()
+            
+
         if message.content.startswith(prefix):
             
             # split the message
@@ -63,6 +82,8 @@ async def on_message(message):
                 target = message.mentions[0]
                 await fun.annoy(message, target)
 
+            elif content.startswith(f"{pf}help"):
+                await utilities.help(message)
 
     except discord.RateLimited:
         print('Rate limit detected')
