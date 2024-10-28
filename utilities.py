@@ -1,5 +1,6 @@
 import json
 import discord
+import re
 
 # function to load configuration data from config.json, copied from main.py
 def load_config():
@@ -9,6 +10,8 @@ def load_config():
 
 config = load_config()
 pf = config['prefix']
+rpf = config['rcon_prefix']
+rrpf = config['raw_rcon_prefix']
 server_name = config['server_name']
 
 async def format_help():
@@ -16,7 +19,7 @@ async def format_help():
     with open("help.txt", "r") as file:
         content = file.read()
 
-    formatted_content = content.format(pf=pf)
+    formatted_content = content.format(pf=pf, rpf=rpf, rrpf=rrpf)
 
     return formatted_content
 
@@ -29,4 +32,6 @@ async def help(message):
     help_embed = discord.Embed(title=f'{server_name} Bot Commands', description=help_message)
     await message.channel.send(embed=help_embed)
     
-
+async def clean_response(response):
+    cleaned_response = re.sub(r'§[0-9a-fk-orA-FK-OR]', '', response) #use a regex to remove mc colour codes
+    return cleaned_response

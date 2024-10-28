@@ -2,9 +2,9 @@ import discord
 import json
 import utilities
 import fun
-from mcrcon import MCRcon
-
+import mcrcon
 global deleted_embed
+import importlib
 
 # stuff
 deleted_embeds = {}
@@ -22,26 +22,22 @@ config = load_config()
 prefix = config['prefix']
 token = config['token']
 logging_channel = config['logging_channel_id']
-bot_owner_id = config['bot_owner_id']
+bot_owner_id = int(config['bot_owner_id'])
 rcon_prefix = config['rcon_prefix']
+raw_rcon_prefix = config['raw_rcon_prefix']
 pf = prefix
 rpf = rcon_prefix
+rrpf = raw_rcon_prefix
 
 # rcon stuff
 rcon_host = config['rcon_host']
 rcon_port = int(config['rcon_port'])
 rcon_password = config['rcon_password']
 
-# create an MCRcon instance
-mcr = MCRcon(rcon_host, rcon_password, rcon_port)
-mcr = MCRcon(host=rcon_host, password=rcon_password, port=rcon_port)
-
-print(bot_owner_id)
-
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
 
-# its pretty obvious what this does
+# stuff to do at startup
 @client.event
 async def on_ready():
     print(f'Now logged in as {client.user}')
@@ -50,20 +46,32 @@ async def on_ready():
     latency = round(client.latency * 1000, 2)
     print(f'Ping: {latency} ms')
 
-# this too
+
+
+# bot event for commands
 @client.event
 async def on_message(message):
     try:
 
         if message.content.startswith(rpf) and message.author.id == bot_owner_id:
+            mcr = mcrcon.MCRcon(port=rcon_port, host=rcon_host, password=rcon_password)
             mcr.connect()
-            response = mcr.command(message.content)
-            print(response)
+            command = message.content[1:]
+            response = await utilities.clean_response(mcr.command(command))
+            print(f"Server Respose: {response}")
             await message.channel.send(response)
             mcr.disconnect()
-            
+           
+        elif message.content.startswith(rrpf) and message.author.id == bot_owner_id:
+            mcr = mcrcon.MCRcon(port=rcon_port, host=rcon_host, password=rcon_password)
+            mcr.connect()
+            command = message.content[1:]
+            response = mcr.command(command)
+            print(f"Server Respose: {response}")
+            await message.channel.send(response)
+            mcr.disconnect()
 
-        if message.content.startswith(prefix):
+        elif message.content.startswith(prefix):
             
             # split the message
             content = message.content
@@ -85,8 +93,15 @@ async def on_message(message):
             elif content.startswith(f"{pf}help"):
                 await utilities.help(message)
 
+            elif content.startswith(f"{pf}reload") and message.author.id == bot_owner_id:
+                importlib.reload(utilities)
+                importlib.reload(fun)
+
     except discord.RateLimited:
         print('Rate limit detected')
+
+
+
 
 @client.event
 async def on_message_delete(message):
