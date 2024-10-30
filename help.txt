@@ -3,3 +3,4 @@
 {rpf}: Use this at the start of a message to run a command using rcon (owner only)
 {rrpf}: Same as {rpf} but returns the raw output of the command with colour codes (owner only)
 {pf}reload: Reload the config and parts of the bot, does reload the main script (owner only)
+{pf}snipe: get a deleted message
