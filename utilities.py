@@ -37,26 +37,31 @@ async def format_help():
 
 
 # function to save blacklisted users to blacklisted_users.json
-async def save_blacklisted_users(list, file):
-    with open(file, 'w') as bl_file:
-        json.dump(list, bl_file)
+async def save_list(list, file):
+    with open(file, 'w') as list_file:
+        json.dump(list, list_file)
 
-async def add_user(message, content, list, file):
+async def add_user(message, content, list, file, list_name):
     user_id_previous = content.split()[1]
     user_id = int(user_id_previous[2:-1])
     if user_id not in list and not user_id == bot_owner_id:
         list.append(user_id)
-        await save_blacklisted_users(list, file)  # Save to file after adding
-        await message.channel.send(f"<@{user_id}> has been added to list {list}.")
+        await save_list(list, file)  # Save to file after adding
+        await message.channel.send(f"<@{user_id}> has been added to list {list_name}.")
 
-async def remove_user(message, content, list, file):
-    user_id = int(content.split()[1])
+async def remove_user(message, content, list, file, list_name):
+    user_id_previous = content.split()[1]
+    user_id = user_id_previous[2:-1]
+    if not "@" in user_id:
+        user_id = int(content.split()[1])
+    else:
+        user_id = int(user_id[2:-1])
     if user_id in list:
         list.remove(user_id)
-        await save_blacklisted_users(list, file)  # Save to file after removing
-        await message.channel.send(f"<@{user_id}> has been removed from list {list}.")
+        await save_list(list, file)  # Save to file after removing
+        await message.channel.send(f"<@{user_id}> has been removed from list {list_name}.")
     else:
-        await message.channel.send(f"User {user_id} is not in  list {list}.")
+        await message.channel.send(f"<@{user_id}> is not in list {list_name}.")
 
 
 

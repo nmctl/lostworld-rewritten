@@ -9,20 +9,13 @@ import importlib
 # stuff
 deleted_embeds = {}
 blacklisted_file = open('blacklisted_users.json')
+blacklisted_file_path = 'blacklisted_users.json'
 trusted_file = open('trusted_users.json')
 blacklisted_users = json.load(blacklisted_file)
 trusted_users = json.load(trusted_file)
 
-
-
-# function to load configuration data from config.json
-def load_config():
-    with open('config.json', 'r') as config_file:
-        config = json.load(config_file)
-    return config
-
 # load config data and values
-config = load_config()
+config = utilities.load_config()
 prefix = config['prefix']
 token = config['token']
 logging_channel = config['logging_channel_id']
@@ -77,6 +70,10 @@ async def on_message(message):
             await message.channel.send(response)
             mcr.disconnect()
 
+        elif message.content.startswith(prefix) and message.author.id in blacklisted_users and not message.author.id == bot_owner_id:
+            await message.channel.send('You are blacklisted.')
+            return
+
         elif message.content.startswith(prefix) and not message.author.id in blacklisted_users:
             
             # split the message
@@ -102,19 +99,21 @@ async def on_message(message):
             elif content.startswith(f"{pf}startserver"):
                 await utilities.startserver(message, command=server_start_command)
 
-            elif content.startswith(f"{pf}blacklist") and message.author.id in trusted_users or message.author.id == bot_owner_id:
-                await utilities.add_user(message, content, blacklisted_users, blacklisted_file)
-                # await utilities.save_blacklisted_users(blacklisted)
-            
-            elif content.startswith(f"{pf}unblacklist") and message.author.id in trusted_users or message.author.id == bot_owner_id:
-                await utilities.remove_user(message, content, blacklisted_users, blacklisted_file)
-                # await utilities.save_blacklisted_users()
+            elif content.startswith(f"{pf}blacklist") and (message.author.id in trusted_users or message.author.id == bot_owner_id):
+                await utilities.add_user(message, content, blacklisted_users, blacklisted_file_path, list_name="blacklisted users")
+    # await utilities.save_blacklisted_users(blacklisted)
 
-            elif content.startswith(f"{pf}trust") and message.author.id == bot_owner_id:
-                await utilities.add_user(message, content, trusted_users, trusted_file)
+            elif content.startswith(f"{pf}unblacklist") and (message.author.id in trusted_users or message.author.id == bot_owner_id):
+                await utilities.remove_user(message, content, blacklisted_users, blacklisted_file_path, list_name="blacklisted users")
+    # await utilities.save_blacklisted_users()
 
-            elif content.startswith(f"{pf}untrust") and message.author.id == bot_owner_id:
-                await utilities.remove_user(message, content, trusted_users, trusted_file)
+            elif content.startswith(f"{pf}trust2") and message.author.id == bot_owner_id:
+                await utilities.add_user(message, content, trusted_users, trusted_file, list_name="trusted users")
+
+            elif content.startswith(f"{pf}untrust2") and message.author.id == bot_owner_id:
+                await utilities.remove_user(message, content, trusted_users, trusted_file, list_name="trusted users")
+
+
 
     except discord.RateLimited:
         print('Rate limit detected')
