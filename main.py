@@ -11,6 +11,7 @@ deleted_embeds = {}
 blacklisted_file = open('blacklisted_users.json')
 blacklisted_file_path = 'blacklisted_users.json'
 trusted_file = open('trusted_users.json')
+trusted_file_path = 'trusted_users.json'
 blacklisted_users = json.load(blacklisted_file)
 trusted_users = json.load(trusted_file)
 
@@ -100,18 +101,24 @@ async def on_message(message):
                 await utilities.startserver(message, command=server_start_command)
 
             elif content.startswith(f"{pf}blacklist") and (message.author.id in trusted_users or message.author.id == bot_owner_id):
-                await utilities.add_user(message, content, blacklisted_users, blacklisted_file_path, list_name="blacklisted users")
+                user = content.split()[1]
+                if not "@" in user:
+                    user = int(user)
+                else:
+                    user = int(user[2:-1])
+                if user == bot_owner_id: await message.channel.send("You cannot blacklist the bot owner.")
+                else: await utilities.add_user(message=message, content=content, user_list=blacklisted_users, file=blacklisted_file_path, list_name="blacklisted users")
     # await utilities.save_blacklisted_users(blacklisted)
 
             elif content.startswith(f"{pf}unblacklist") and (message.author.id in trusted_users or message.author.id == bot_owner_id):
-                await utilities.remove_user(message, content, blacklisted_users, blacklisted_file_path, list_name="blacklisted users")
+                await utilities.remove_user(message=message, content=content, user_list=blacklisted_users, file=blacklisted_file_path, list_name="blacklisted users")
     # await utilities.save_blacklisted_users()
 
-            elif content.startswith(f"{pf}trust2") and message.author.id == bot_owner_id:
-                await utilities.add_user(message, content, trusted_users, trusted_file, list_name="trusted users")
+            elif content.startswith(f"{pf}trust") and message.author.id == bot_owner_id:
+                await utilities.add_user(message=message, content=content, file=trusted_file_path, user_list=trusted_users, list_name="trusted users")
 
-            elif content.startswith(f"{pf}untrust2") and message.author.id == bot_owner_id:
-                await utilities.remove_user(message, content, trusted_users, trusted_file, list_name="trusted users")
+            elif content.startswith(f"{pf}untrust") and message.author.id == bot_owner_id:
+                await utilities.remove_user(message=message, content=content, file=trusted_file_path, user_list=trusted_users, list_name="trusted users")
 
 
 
