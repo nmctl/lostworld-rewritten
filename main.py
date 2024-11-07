@@ -5,6 +5,7 @@ import fun
 import mcrcon
 global deleted_embed
 import importlib
+import moderation
 
 # stuff
 deleted_embeds = {}
@@ -23,6 +24,7 @@ logging_channel = config['logging_channel_id']
 bot_owner_id = int(config['bot_owner_id'])
 rcon_prefix = config['rcon_prefix']
 raw_rcon_prefix = config['raw_rcon_prefix']
+guild_id = config['guild_id']
 pf = prefix
 rpf = rcon_prefix
 rrpf = raw_rcon_prefix
@@ -51,18 +53,19 @@ async def on_ready():
 # bot event for commands
 @client.event
 async def on_message(message):
+    content = message.content
     try:
 
-        if message.content.startswith(rpf) and message.author.id == bot_owner_id:
+        if content.startswith(rpf) and message.author.id == bot_owner_id:
             mcr = mcrcon.MCRcon(port=rcon_port, host=rcon_host, password=rcon_password)
             mcr.connect()
             command = message.content[1:]
             response = await utilities.clean_response(mcr.command(command))
-            print(f"Server Respose: {response}")
+            print(f"Server Response: {response}")
             await message.channel.send(response)
             mcr.disconnect()
            
-        elif message.content.startswith(rrpf) and message.author.id == bot_owner_id:
+        elif content.startswith(rrpf) and message.author.id == bot_owner_id:
             mcr = mcrcon.MCRcon(port=rcon_port, host=rcon_host, password=rcon_password)
             mcr.connect()
             command = message.content[1:]
@@ -71,15 +74,12 @@ async def on_message(message):
             await message.channel.send(response)
             mcr.disconnect()
 
-        elif message.content.startswith(prefix) and message.author.id in blacklisted_users and not message.author.id == bot_owner_id:
+        elif content.startswith(prefix) and message.author.id in blacklisted_users and not message.author.id == bot_owner_id:
             await message.channel.send('You are blacklisted.')
             return
 
-        elif message.content.startswith(prefix) and not message.author.id in blacklisted_users:
+        elif content.startswith(prefix) and not message.author.id in blacklisted_users:
             
-            # split the message
-            content = message.content
-        
             if content.startswith(f'{pf}snipe'):
                 await fun.snipe(message, deleted_embeds)
 
@@ -94,8 +94,10 @@ async def on_message(message):
                 await utilities.help(message)
 
             elif content.startswith(f"{pf}reload") and message.author.id == bot_owner_id:
+                await message.channel.send('Reloading...')
                 importlib.reload(utilities)
                 importlib.reload(fun)
+                await message.channel.send('Reload complete.')
 
             elif content.startswith(f"{pf}startserver"):
                 await utilities.startserver(message, command=server_start_command)
@@ -119,6 +121,23 @@ async def on_message(message):
 
             elif content.startswith(f"{pf}untrust") and message.author.id == bot_owner_id:
                 await utilities.remove_user(message=message, content=content, file=trusted_file_path, user_list=trusted_users, list_name="trusted users")
+
+            elif content.startswith(f"{pf}status"):
+                await utilities.fetch_status(message=message)
+
+            elif content.startswith(f"{pf}ban"):
+                await moderation.ban(message=message)
+
+            elif content.startswith(f"{pf}unban"):
+                await moderation.unban(message=message)
+
+            elif content.startswith(f"{pf}addrole"):
+                await moderation.add_role(message=message)
+
+            elif content.startswith(f"{pf}delrole"):
+                await moderation.remove_role(message=message)
+
+            
 
 
 
