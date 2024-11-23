@@ -3,9 +3,10 @@ import json
 import utilities
 import fun
 import mcrcon
-global deleted_embed
 import importlib
 import moderation
+
+global deleted_embed
 
 # stuff
 deleted_embeds = {}
@@ -25,6 +26,8 @@ bot_owner_id = int(config['bot_owner_id'])
 rcon_prefix = config['rcon_prefix']
 raw_rcon_prefix = config['raw_rcon_prefix']
 guild_id = config['guild_id']
+server_name = config['server_name']
+logging_channel_id = config['logging_channel_id']
 pf = prefix
 rpf = rcon_prefix
 rrpf = raw_rcon_prefix
@@ -46,7 +49,9 @@ async def on_ready():
     await client.change_presence(status=discord.Status.online, activity=game)
     latency = round(client.latency * 1000, 2)
     print(f'Ping: {latency} ms')
-    print(blacklisted_users)
+    print('LW Bot Discord Server: https://discord.gg/VjaNJH6M7N')
+    logging_channel = await client.fetch_channel(logging_channel_id)
+    await logging_channel.send(f'Lost World Bot is now starting for {server_name}. Join https://discord.gg/VjaNJH6M7N for support.')
 
 
 
@@ -137,9 +142,11 @@ async def on_message(message):
             elif content.startswith(f"{pf}delrole"):
                 await moderation.remove_role(message=message)
 
-            
+            elif content.startswith(f"{pf}killswitch") and message.author.id == bot_owner_id:
+                await utilities.killswitch(message)
 
-
+            elif content.startswith(f"{pf}setstatus"):
+                await utilities.set_status(message, client)
 
     except discord.RateLimited:
         print('Rate limit detected')
@@ -161,3 +168,5 @@ async def on_message_delete(message):
     deleted_embeds[message.channel.id] = deleted_embed
 
 client.run(token)
+
+"thanks for using my bot :) (btw please join https://discord.gg/lostworld)"

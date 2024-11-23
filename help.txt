@@ -3,4 +3,12 @@
 {rpf}: Use this at the start of a message to run a command using rcon (owner only)
 {rrpf}: Same as {rpf} but returns the raw output of the command with colour codes (owner only)
 {pf}reload: Reload the config and parts of the bot, does reload the main script (owner only)
-{pf}snipe: get a deleted message
+{pf}snipe: Get a deleted message
+{pf}trust: Give someone extra permissions with the bot (owner only)
+{pf}untrust: Remove someone's extra permissions (owner only)
+{pf}blacklist: Ban someone from using the bot (trusted users only)
+{pf}unblacklist: Unban someone from using the bot (trusted users only)
+{pf}ban: Ban someone from the server (staff only)
+{pf}unban: Unban someone from the server (staff only)
+{pf}addrole: Add a role to someone (admin only)
+{pf}delrole: Remove a role from someone (admin only)
