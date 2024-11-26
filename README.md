@@ -1,37 +1,62 @@
-# Lost World SMP Discord Bot  
+# Lost World SMP Discord Bot
 
-This is a discord bot that gives minecraft server admins full control over their server through discord.  
-It has features like starting the server from discord, some integration with DiscordSRV, the ability to run minecraft commands on discord through rcon, moderation commands, and other fun commands.  
+Get (almost) full remote control over your minecraft server with this discord bot.  
 
-## How to use the bot  
-To use this discord bot, you will first have to create one at https://discord.com/developers/applications  
-Once you have created the bot, you must copy the token from the website and download the code from here.  
-Once downloaded, you must create your config file. There is an included config generator, but it is not finished so it is recommended to write the config manually.  
-Current config options include:  
-prefix (the prefix to run commands with, usually something like ! or $)  
-token (the bot token, copied from the website earlier)  
-logging_channel_id (a channel for the bot to send logs to)  
-rcon_host (the server ip to connect to with rcon, defined in server.properties)  
-rcon_port (the port the bot will use to connect to with rcon, defined in server.properties)  
-rcon_password (rcon password, defined in server.properties)  
-bot_owner_id (your discord user id, requires developer mode to be enabled)  
-rcon_prefix (the prefix to use to run minecraft commands from discord, returning a cleaned response that uses a regex to clear colour codes)  
-raw_rcon_perfix (the prefix to use to run minecraft commands from discord, returning the raw output of the command)  
-server_name (the name of your server)  
-server_start_command (the command you use to start the server)  
-server_ip (your server's ip address)  
-server_port (your server's port)  
-guild_id (your discord server's id, requires developer mode to be enabled in discord settings)  
-  
-Once you are done configuring the bot, you can install the dependencies with this command:  
-`pip install discord mcrcon`  
-Or if you are on linux, create a virtual environment:  
-`python3 -m venv botenv`  
-`source botenv/bin/activate`  
-`pip install discord mcrcon`  
-Once this is done, start the bot with this command:  
-`python3 main.py` or `python main.py`  
+## Setup Guide
+  1. Create a discord bot  
+     Go to https://discord.com/developers/applications  
+     Create an application  
+     Copy the token for later  
+  2. Download the code  
+     Download the code, or clone the repository: `git clone http://github.com/PythonifyIsTaken/lostworld-rewritten.git/`  
+  3. Create your config file  
+     Here's an example of a `config.json` file:
 
-## Where to get help  
-Discord server: https://discord.gg/VjaNJH6M7N  
-My discord username: @nmcli  
+```json
+{
+  "prefix": "!",  // Command prefix for the bot (e.g., ! or $)
+  "token": "YOUR_BOT_TOKEN",  // Your bot token from the Discord Developer Portal
+  "logging_channel_id": "123456789012345678",  // Discord channel ID for bot logs
+  "rcon_host": "server_ip_here",  // IP address of your Minecraft server
+  "rcon_port": 25575,  // Port defined in your server.properties
+  "rcon_password": "your_rcon_password",  // RCON password from server.properties
+  "bot_owner_id": "123456789012345678",  // Your Discord user ID
+  "rcon_prefix": "!mc",  // Prefix for RCON commands (customizable)
+  "raw_rcon_prefix": "!raw",  // Prefix for raw RCON output (customizable)
+  "server_name": "My Minecraft Server",  // A friendly name for your server
+  "server_start_command": "./start_server.sh",  // Command to start your server
+  "server_ip": "your.server.ip",  // IP address for server display
+  "server_port": 25565,  // Port for players to connect to your server
+  "guild_id": "123456789012345678",  // Your Discord server (guild) ID
+  "discord_invite": "https://discord.gg/lostworld" // Your discord server invite
+}
+```
+  4. Install dependencies  
+     For windows: `pip install discord mcrcon`  
+     For linux (with a venv):  
+     `python3 -m venv botenv`  
+     `source botenv/bin/activate`  
+     `pip install discord mcrcon`  
+  5. Finally, start the bot  
+     `python main.py` OR `python3 main.py`
+     
+## Features  
+- Start/stop your server from discord  
+- Ban players from discord  
+- Run any command from discord  
+- Blacklisting system (ban people from using bot commands)  
+- Trusting system (give people extra permissions)
+- Moderation features
+
+## Coming soon  
+- Plugin management  
+- A custom plugin to link minecraft and discord accounts (like discordsrv)
+- Discord server welcome message
+- Detect people asking for the server ip
+
+## Coming eventually (maybe)  
+- A plugin database with download links and file names for each plugin (to help with plugin management)  
+
+## Need Help?
+- Join our discord server: https://discord.gg/lostworld
+- Or dm me on discord: @nmcli
