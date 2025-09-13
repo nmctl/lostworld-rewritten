@@ -37,10 +37,10 @@ red = config['red'].strip('#')
 yellow = config['yellow'].strip('#')
 green = config['green'].strip('#')
 
-async def create_embed(title, description, colour):
-    colour_int = int(colour, 16)
-    embed_colour = discord.Color(colour_int)
-    embed = discord.Embed(title=title, description=description, color=embed_colour)
+async def create_embed(title, description, color):
+    color_int = int(color, 16)
+    embed_color = discord.Color(color_int)
+    embed = discord.Embed(title=title, description=description, color=embed_color)
 
     return embed
 
@@ -55,10 +55,10 @@ async def check_updates_command(message):
         print(f'Local: {local}')
 
         if local != latest:
-            embed = await create_embed(title="Update Available!", description=f"Branch: {branch}\nCommit hash: {latest}\nCommit message: {commit_message}", colour=green)
+            embed = await create_embed(title="Update Available!", description=f"Branch: {branch}\nCommit hash: {latest}\nCommit message: {commit_message}", color=green)
             await message.channel.send(embed=embed)
         else:
-            embed = await create_embed(title="Bot is up to date.", description="No new updates found.", colour=green)
+            embed = await create_embed(title="Bot is up to date.", description="No new updates found.", color=green)
             await message.channel.send(embed=embed)
     except Exception as e:
         await message.channel.send(f'Checking for updates failed: {e}')
@@ -179,7 +179,7 @@ async def startserver(message, command):
         subprocess.Popen(command)
     
 async def clean_response(response):
-    cleaned_response = re.sub(r'§[0-9a-fk-orA-FK-OR]', '', response) # use a regex to remove mc colour codes
+    cleaned_response = re.sub(r'§[0-9a-fk-orA-FK-OR]', '', response) # use a regex to remove mc color codes
     return cleaned_response
 
 async def killswitch(message):
