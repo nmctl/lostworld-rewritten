@@ -33,6 +33,9 @@ server_ip = config['server_ip']
 server_port = config['server_port']
 github_repo = 'nmctl/lostworld-rewritten'
 branch = config['branch']
+red = config['red'].strip('#')
+yellow = config['yellow'].strip('#')
+green = config['green'].strip('#')
 
 async def create_embed(title, description, colour):
     colour_int = int(color, 16)
@@ -52,10 +55,10 @@ async def check_updates_command(message):
         print(f'Local: {local}')
 
         if local != latest:
-            embed = create_embed(title="Update Available!", description=f"Branch: {branch}\nCommit hash: {latest}\nCommit message: {commit_message}")
+            embed = create_embed(title="Update Available!", description=f"Branch: {branch}\nCommit hash: {latest}\nCommit message: {commit_message}", colour=green)
             await message.channel.send(embed=embed)
         else:
-            embed = create_embed(title="Bot is up to date.", description="No new updates found.")
+            embed = create_embed(title="Bot is up to date.", description="No new updates found.", colour=green)
             await message.channel.send(embed=embed)
     except Exception as e:
         await message.channel.send(f'Checking for updates failed: {e}')
