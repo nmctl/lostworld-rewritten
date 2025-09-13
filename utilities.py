@@ -33,33 +33,39 @@ server_ip = config['server_ip']
 server_port = config['server_port']
 github_repo = 'nmctl/lostworld-rewritten'
 branch = config['branch']
+red = config['red'].strip('#')
+yellow = config['yellow'].strip('#')
+green = config['green'].strip('#')
 
-async def create_embed(title, description, colour):
-    colour_int = int(color, 16)
-    embed_colour = discord.Color(colour_int)
-    embed = discord.Embed(title=title, description=description, color=embed_colour)
+async def create_embed(title, description, color, footer = None):
+    color_int = int(color, 16)
+    embed_color = discord.Color(color_int)
+    embed = discord.Embed(title=title, description=description, color=embed_color)
+    embed.set_footer(text=footer)
 
     return embed
 
 async def check_updates_command(message):
-    await message.channel.send('Checking for updates...')
     try:
         response = requests.get(f"https://api.github.com/repos/{github_repo}/commits/{branch}")
         latest = response.json()["sha"]
         commit_message = response.json()["commit"]["message"]
+
+        remote_version = requests.get(f"https://raw.githubusercontent.com/nmctl/lostworld-rewritten/{branch}/VERSION").text
+        with open('VERSION', 'r') as versionfile:
+            local_version = versionfile.read()
+
         print(f'Remote: {latest}')
         print(f'Commit message: {commit_message}')
         local = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
         print(f'Local: {local}')
 
         if local != latest:
-            await message.channel.send(f"""
-Update Available!
-Branch: {branch}
-Commit hash: {latest}
-Commit message: {commit_message}""")
+            embed = await create_embed(title=f"Update {remote_version} Available!", description=f"Branch: {branch}\nCommit hash: {latest}\nCommit message: {commit_message}\nCurrent version: {local_version}", color=green, footer=f"Run `{pf}update` to install the update.")
+            await message.channel.send(embed=embed)
         else:
-            await message.channel.send('Bot is up to date.')
+            embed = await create_embed(title="Bot is up to date.", description="No new updates found.", color=green)
+            await message.channel.send(embed=embed)
     except Exception as e:
         await message.channel.send(f'Checking for updates failed: {e}')
 
@@ -94,12 +100,12 @@ Commit message {commit_message}
 async def version_command(message):
     commit_message = subprocess.check_output(['git', 'log', '-1', '--pretty=%B']).decode().strip()
     commit_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
+    with open('VERSION', 'r') as versionfile:
+        version = versionfile.read()
 
-    await message.channel.send(f'''
-Bot Version Info
-Commit Message: {commit_message}
-Commit Hash: {commit_hash}
-                               ''')
+    embed = await create_embed(title='Bot Version Info', description=f"Commit Message: {commit_message}\nCommit Hash: {commit_hash}\nVersion: {version}", color=green)
+
+    await message.channel.send(embed=embed)
 
 async def format_help():
     # Read the contents of the text file
@@ -166,9 +172,8 @@ async def ping(message, client):
 
 async def help(message):
     help_message = await format_help()
-    help_embed = discord.Embed(title=f'{server_name} Bot Commands', description=help_message)
-    help_embed.set_footer(text=f'Requested by {message.author.name}')
-    await message.channel.send(embed=help_embed)
+    embed = await create_embed(title=f"{server_name} Bot Commands", description=help_message, color=green, footer=f"Requested by {message.author.name}")
+    await message.channel.send(embed=embed)
 
 async def startserver(message, command):
     await message.channel.send(f'Checking server status...')
@@ -181,7 +186,7 @@ async def startserver(message, command):
         subprocess.Popen(command)
     
 async def clean_response(response):
-    cleaned_response = re.sub(r'§[0-9a-fk-orA-FK-OR]', '', response) # use a regex to remove mc colour codes
+    cleaned_response = re.sub(r'§[0-9a-fk-orA-FK-OR]', '', response) # use a regex to remove mc color codes
     return cleaned_response
 
 async def killswitch(message):
