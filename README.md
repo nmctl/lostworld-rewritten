@@ -48,6 +48,7 @@ Get (almost) full remote control over your minecraft server with this discord bo
 - Blacklisting system (ban people from using bot commands)  
 - Trusting system (give people extra permissions)
 - Moderation features
+- Update command
 
 ## Coming soon  
 - Plugin management  
@@ -57,6 +58,9 @@ Get (almost) full remote control over your minecraft server with this discord bo
 
 ## Coming eventually (maybe)  
 - A plugin database with download links and file names for each plugin (to help with plugin management)  
+
+## Updating  
+To update the bot, simply run the update command. To check for updates, run the checkupdates command.
 
 ## Need Help?
 - Join our discord server: https://discord.gg/lostworld
