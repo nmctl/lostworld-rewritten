@@ -42,7 +42,6 @@ async def create_embed(title, description, colour):
     return embed
 
 async def check_updates_command(message):
-    await message.channel.send('Checking for updates...')
     try:
         response = requests.get(f"https://api.github.com/repos/{github_repo}/commits/{branch}")
         latest = response.json()["sha"]
@@ -53,6 +52,7 @@ async def check_updates_command(message):
         print(f'Local: {local}')
 
         if local != latest:
+            embed = create_embed(title="Update Available!", content=f"Branch: {branch}\nCommit hash: {latest}\nCommit message: {commit_message}")
             await message.channel.send(f"""
 Update Available!
 Branch: {branch}
