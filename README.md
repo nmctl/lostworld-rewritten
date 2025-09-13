@@ -63,7 +63,8 @@ Get (almost) full remote control over your minecraft server with this discord bo
 - A plugin database with download links and file names for each plugin (to help with plugin management)  
 
 ## Updating  
-To update the bot, simply run the update command. To check for updates, run the checkupdates command.
+To update the bot, simply run the update command. To check for updates, run the checkupdates command.  
+After an update that adds configuration options, you will need to edit the config file to add them or the bot will not run.
 
 ## Need Help?
 - Join our discord server: https://discord.gg/lostworld
