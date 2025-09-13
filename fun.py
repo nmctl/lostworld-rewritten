@@ -1,5 +1,8 @@
 import asyncio
 import discord
+import utilities
+config = utilities.load_config()
+red = config['red'].strip('#')
 
 async def snipe(message, deleted_embeds):
     if message.channel.id in deleted_embeds:
