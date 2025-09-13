@@ -52,6 +52,8 @@ async def check_updates_command(message):
         commit_message = response.json()["commit"]["message"]
 
         remote_version = requests.get(f"https://raw.githubusercontent.com/nmctl/lostworld-rewritten/{branch}/VERSION").text
+        remote_update = requests.get(f"https://raw.githubusercontent.com/nmctl/lostworld-rewritten/{branch}/latest.txt").text
+
         with open('VERSION', 'r') as versionfile:
             local_version = versionfile.read()
 
@@ -61,7 +63,7 @@ async def check_updates_command(message):
         print(f'Local: {local}')
 
         if local != latest:
-            embed = await create_embed(title=f"Update {remote_version} Available!", description=f"Branch: {branch}\nCommit hash: {latest}\nCommit message: {commit_message}\nCurrent version: {local_version}", color=green, footer=f"Run `{pf}update` to install the update.")
+            embed = await create_embed(title=f"Update {remote_version} Available!", description=f"Branch: {branch}\nCommit hash: {latest}\nCommit message: {commit_message}\nCurrent version: {local_version}\nChanges: {remote_update}", color=green, footer=f"Run `{pf}update` to install the update.")
             await message.channel.send(embed=embed)
         else:
             embed = await create_embed(title="Bot is up to date.", description="No new updates found.", color=green)
@@ -103,7 +105,10 @@ async def version_command(message):
     with open('VERSION', 'r') as versionfile:
         version = versionfile.read()
 
-    embed = await create_embed(title='Bot Version Info', description=f"Commit Message: {commit_message}\nCommit Hash: {commit_hash}\nVersion: {version}", color=green)
+    with open('latest.txt', 'r') as latestfile:
+        latest_update = latestfile.read()
+
+    embed = await create_embed(title='Bot Version Info', description=f"Commit Message: {commit_message}\nCommit Hash: {commit_hash}\nVersion: {version}\nChanges: {latest_update}", color=green)
 
     await message.channel.send(embed=embed)
 
