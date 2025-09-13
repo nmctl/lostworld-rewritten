@@ -34,6 +34,13 @@ server_port = config['server_port']
 github_repo = 'nmctl/lostworld-rewritten'
 branch = config['branch']
 
+async def create_embed(title, description, colour):
+    colour_int = int(color, 16)
+    embed_colour = discord.Color(colour_int)
+    embed = discord.Embed(title=title, description=description, color=embed_colour)
+
+    return embed
+
 async def check_updates_command(message):
     await message.channel.send('Checking for updates...')
     try:
@@ -83,6 +90,16 @@ Commit message {commit_message}
             os.execv(sys.executable, [sys.executable] + sys.argv)
     except Exception as e:
         await message.channel.send(f'Update failed: {e}')
+
+async def version_command(message):
+    commit_message = subprocess.check_output(['git', 'log', '-1', '--pretty=%B']).decode().strip()
+    commit_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
+
+    await message.channel.send(f'''
+Bot Version Info
+Commit Message: {commit_message}
+Commit Hash: {commit_hash}
+                               ''')
 
 async def format_help():
     # Read the contents of the text file
