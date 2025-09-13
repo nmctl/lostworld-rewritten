@@ -14,22 +14,25 @@ Get (almost) full remote control over your minecraft server with this discord bo
 
 ```json
 {
-  "prefix": "!",  // Command prefix for the bot (e.g., ! or $)
-  "token": "YOUR_BOT_TOKEN",  // Your bot token from the Discord Developer Portal
-  "logging_channel_id": "123456789012345678",  // Discord channel ID for bot logs
-  "rcon_host": "server_ip_here",  // IP address of your Minecraft server
-  "rcon_port": 25575,  // Port defined in your server.properties
-  "rcon_password": "your_rcon_password",  // RCON password from server.properties
-  "bot_owner_id": "123456789012345678",  // Your Discord user ID
-  "rcon_prefix": "!mc",  // Prefix for RCON commands (customizable)
-  "raw_rcon_prefix": "!raw",  // Prefix for raw RCON output (customizable)
-  "server_name": "My Minecraft Server",  // A friendly name for your server
-  "server_start_command": "./start_server.sh",  // Command to start your server
-  "server_ip": "your.server.ip",  // IP address for server display
-  "server_port": 25565,  // Port for players to connect to your server
-  "guild_id": "123456789012345678",  // Your Discord server (guild) ID
-  "discord_invite": "https://discord.gg/lostworld", // Your discord server invite
-  "branch": "master" // The branch you want to use (master for the stable version, dev for new features)
+  "prefix": "!", Command prefix for the bot (e.g., ! or $)
+  "token": "YOUR_BOT_TOKEN",   Your bot token from the Discord Developer Portal
+  "logging_channel_id": "123456789012345678",   Discord channel ID for bot logs
+  "rcon_host": "server_ip_here",   IP address of your Minecraft server
+  "rcon_port": 25575,   Port defined in your server.properties
+  "rcon_password": "your_rcon_password",   RCON password from server.properties
+  "bot_owner_id": "123456789012345678",   Your Discord user ID
+  "rcon_prefix": "!mc",   Prefix for RCON commands (customizable)
+  "raw_rcon_prefix": "!raw",   Prefix for raw RCON output (customizable)
+  "server_name": "My Minecraft Server",   A friendly name for your server
+  "server_start_command": "./start_server.sh",   Command to start your server
+  "server_ip": "your.server.ip",   IP address for server display
+  "server_port": 25565,   Port for players to connect to your server
+  "guild_id": "123456789012345678",   Your Discord server (guild) ID
+  "discord_invite": "https://discord.gg/lostworld",  Your discord server invite
+  "branch": "master",  The branch you want to use (master for the stable version, dev for new features)
+  "red": "#f38ba8", A colour code for the colour red (used for error embeds)
+  "yellow": "#f9e2af" A colour code for the colour yellow (used for warning embeds)
+  "green": "#a6e3a1" A colour code for the colour green (used for successful embeds)
 }
 ```
   4. Install dependencies  
