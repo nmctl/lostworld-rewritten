@@ -23,7 +23,7 @@ async def ban(message):
     banned_embed = await utilities.create_embed(title=f"You have been banned from {server_name}", description=f"Reason: {reason}", color=red)
     await banned_member.send(embed=banned_embed)
     await banned_member.ban(delete_message_days=0, reason=f"Banned By: {message.author.id} Reason: {reason}")
-    embed = await create_embed(title='Member Banned', description=f'<@{user_id}> was successfully banned.\nReason: {reason}')
+    embed = await utilities.create_embed(title='Member Banned', description=f'<@{user_id}> was successfully banned.\nReason: {reason}')
     await message.channel.send(embed=embed, allowed_mentions=am)
 
 async def unban(message):
