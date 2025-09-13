@@ -1,4 +1,11 @@
 import discord
+import utilities
+
+config = utilities.load_config()
+server_name = config['server_name']
+red = config['red'].strip('#')
+yellow = config['yellow'].strip('#')
+green = config['green'].strip('#')
 
 am = discord.AllowedMentions.none()
 
@@ -10,12 +17,15 @@ async def ban(message):
     else:
         user_id = int(user_id[2:-1])
     if not message.author.guild_permissions.ban_members:
-        await message.channel.send('You do not have permission to ban members.')
+        embed = await utilities.create_embed(title='Ban Failed', description='You do not have permission to ban members.', color=red)
         return
-    banned_user = message.guild.get_member(user_id)
-    await banned_user.ban(delete_message_days=0, reason=str(reason))
-    await message.channel.send(f'Banned <@{user_id}> for `{str(reason)}`.', allowed_mentions=am)
-
+    banned_member = message.guild.get_member(user_id)
+    banned_user = await banned_member.get_user()
+    banned_embed = await utilities.create_embed(title=f"You have been banned from {server_name}", description=f"Reason: {reason}", color=red)
+    await banned_user.send()
+    await banned_member.ban(delete_message_days=0, reason=f"Banned By: {message.author.id} Reason: {reason}")
+    embed = await create_embed(title='Member Banned', description=f'<@{user_id}> was successfully banned.\nReason: {reason}')
+    await message.channel.send(embed=embed, allowed_mentions=am)
 
 async def unban(message):
     if not message.author.guild_permissions.ban_members:
