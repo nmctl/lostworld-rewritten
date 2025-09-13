@@ -37,7 +37,9 @@ branch = 'main'
 async def check_for_updates():
     try:
         latest = requests.get(f"https://api.github.com/repos/{github_repo}/commits/{branch}").json()["sha"]
+        print(latest)
         local = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
+        print(local)
         if latest == local:
             return False
         else:
