@@ -85,8 +85,8 @@ Commit message {commit_message}
         await message.channel.send(f'Update failed: {e}')
 
 async def version_command(message):
-    commit_message = subprocess.check_output(['git', 'log', '-1', '--pretty=%B'])
-    commit_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
+    commit_message = subprocess.check_output(['git', 'log', '-1', '--pretty=%B']).decode().strip()
+    commit_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
 
     await message.channel.send(f'''
 Bot Version Info
