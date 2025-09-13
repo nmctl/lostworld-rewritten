@@ -95,11 +95,9 @@ async def version_command(message):
     commit_message = subprocess.check_output(['git', 'log', '-1', '--pretty=%B']).decode().strip()
     commit_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
 
-    await message.channel.send(f'''
-Bot Version Info
-Commit Message: {commit_message}
-Commit Hash: {commit_hash}
-                               ''')
+    embed = create_embed(title='Bot Version Info', description=f"Commit Message: {commit_message}\nCommit Hash: {commit_hash}")
+
+    await message.channel.send(embed=embed)
 
 async def format_help():
     # Read the contents of the text file
