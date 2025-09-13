@@ -81,6 +81,8 @@ Commit message {commit_message}
 
             await message.channel.send('Installation finished, the bot will now restart')
             os.execv(sys.executable, [sys.executable] + sys.argv)
+    except Exception as e:
+        await message.channel.send(f'Update failed: {e}')
 
 async def format_help():
     # Read the contents of the text file
