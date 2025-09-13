@@ -8,7 +8,7 @@ Get (almost) full remote control over your minecraft server with this discord bo
      Create an application  
      Copy the token for later  
   2. Download the code  
-     Download the code, or clone the repository: `git clone http://github.com/PythonifyIsTaken/lostworld-rewritten.git/`  
+     Download the code, or clone the repository: `git clone http://github.com/nmctl/lostworld-rewritten.git/`  
   3. Create your config file  
      Here's an example of a `config.json` file:
 
@@ -36,7 +36,7 @@ Get (almost) full remote control over your minecraft server with this discord bo
      For linux (with a venv):  
      `python3 -m venv botenv`  
      `source botenv/bin/activate`  
-     `pip install discord mcrcon`  
+     `pip install -r requirements.txt`  
   5. Finally, start the bot  
      `python main.py` OR `python3 main.py`
      

@@ -5,6 +5,7 @@ import mcrcon
 import subprocess
 import sys
 import os
+import requests
 
 disallow_mentions = discord.AllowedMentions.none()
 
@@ -35,19 +36,30 @@ branch = 'main'
 
 async def check_for_updates():
     try:
-        latest = requests.get(f"https://api.github.com/repos/{github_repo}/commits/{branch}").json["sha"]
+        latest = requests.get(f"https://api.github.com/repos/{github_repo}/commits/{branch}").json()["sha"]
         local = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
-        if latest = local:
-            return True
-        else:
+        if latest == local:
             return False
+        else:
+            return True
+    except Exception as e:
+        print(f'Failed to check for updates: {e}')
+        return False
 
 async def check_updates_command(message):
     await message.channel.send('Checking for updates...')
     if await check_for_updates() == True:
-        await message.channel.send(f'Update available! Run {pf} to update to the newest version.')
+        await message.channel.send(f'Update available! Run `{pf}update` to update to the newest version.')
     else:
         await message.channel.send('Bot is up to date.')
+
+async def update_command(message):
+    await message.channel.send('Updating...')
+    result = subprocess.run(["git", "pull"], capture_output=True, text=True)
+    await message.channel.send('Installing dependencies...')
+    subprocess.run([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
+    await message.channel.send('Installation finished, the bot will now restart')
+    os.execv(sys.executable, [sys.executable] + sys.argv)
 
 async def format_help():
     # Read the contents of the text file

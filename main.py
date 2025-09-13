@@ -148,6 +148,12 @@ async def on_message(message):
             elif content.startswith(f"{pf}setstatus"):
                 await utilities.set_status(message, client)
 
+            elif content.startswith(f"{pf}checkupdates") and message.author.id == bot_owner_id:
+                await utilities.check_updates_command(message)
+
+            elif content.startswith(f"{pf}update") and message.author.id == bot_owner_id:
+                await utilities.update_command(message)
+
     except discord.RateLimited:
         print('Rate limit detected')
 
