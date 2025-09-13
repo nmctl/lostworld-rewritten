@@ -84,6 +84,16 @@ Commit message {commit_message}
     except Exception as e:
         await message.channel.send(f'Update failed: {e}')
 
+async def version_command(message):
+    commit_message = subprocess.check_output(['git', 'log', '-1', '--pretty=%B'])
+    commit_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
+
+    await message.channel.send(f'''
+Bot Version Info
+Commit Message: {commit_message}
+Commit Hash: {commit_hash}
+                               ''')
+
 async def format_help():
     # Read the contents of the text file
     with open("help.txt", "r") as file:
