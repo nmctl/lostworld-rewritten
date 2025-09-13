@@ -11,6 +11,7 @@ async def ban(message):
         user_id = int(user_id[2:-1])
     if not message.author.guild_permissions.ban_members:
         await message.channel.send('You do not have permission to ban members.')
+        return
     banned_user = message.guild.get_member(user_id)
     await banned_user.ban(delete_message_days=0, reason=str(reason))
     await message.channel.send(f'Banned <@{user_id}> for `{str(reason)}`.', allowed_mentions=am)
