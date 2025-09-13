@@ -34,6 +34,13 @@ server_port = config['server_port']
 github_repo = 'nmctl/lostworld-rewritten'
 branch = config['branch']
 
+async def create_embed(title, description, colour):
+    colour_int = int(color, 16)
+    embed_colour = discord.Color(colour_int)
+    embed = discord.Embed(title=title, description=description, color=embed_colour)
+
+    return embed
+
 async def check_updates_command(message):
     await message.channel.send('Checking for updates...')
     try:
