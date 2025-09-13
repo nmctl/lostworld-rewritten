@@ -50,13 +50,18 @@ async def check_updates_command(message):
         response = requests.get(f"https://api.github.com/repos/{github_repo}/commits/{branch}")
         latest = response.json()["sha"]
         commit_message = response.json()["commit"]["message"]
+
+        remote_version = requests.get("https://raw.githubusercontent.com/nmctl/lostworld-rewritten/master/VERSION")
+        with open('VERSION', 'r') as versionfile:
+            local_version = versionfile.read()
+
         print(f'Remote: {latest}')
         print(f'Commit message: {commit_message}')
         local = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
         print(f'Local: {local}')
 
         if local != latest:
-            embed = await create_embed(title="Update Available!", description=f"Branch: {branch}\nCommit hash: {latest}\nCommit message: {commit_message}", color=green, footer=f"Run `{pf}update` to install the update.")
+            embed = await create_embed(title=f"Update {remote_version} Available!", description=f"Branch: {branch}\nCommit hash: {latest}\nCommit message: {commit_message}\nCurrent version: {local_version}", color=green, footer=f"Run `{pf}update` to install the update.")
             await message.channel.send(embed=embed)
         else:
             embed = await create_embed(title="Bot is up to date.", description="No new updates found.", color=green)
