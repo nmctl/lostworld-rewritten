@@ -37,10 +37,10 @@ red = config['red'].strip('#')
 yellow = config['yellow'].strip('#')
 green = config['green'].strip('#')
 
-async def create_embed(title, description, color):
+async def create_embed(title, description, color, footer = None):
     color_int = int(color, 16)
     embed_color = discord.Color(color_int)
-    embed = discord.Embed(title=title, description=description, color=embed_color)
+    embed = discord.Embed(title=title, description=description, color=embed_color, footer=footer)
 
     return embed
 
@@ -55,7 +55,7 @@ async def check_updates_command(message):
         print(f'Local: {local}')
 
         if local != latest:
-            embed = await create_embed(title="Update Available!", description=f"Branch: {branch}\nCommit hash: {latest}\nCommit message: {commit_message}", color=green)
+            embed = await create_embed(title="Update Available!", description=f"Branch: {branch}\nCommit hash: {latest}\nCommit message: {commit_message}", color=green, footer=f"Run `{pf}update` to install the update.")
             await message.channel.send(embed=embed)
         else:
             embed = await create_embed(title="Bot is up to date.", description="No new updates found.", color=green)
