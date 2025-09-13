@@ -3,6 +3,8 @@ import discord
 import re
 import mcrcon
 import subprocess
+import sys
+import os
 
 disallow_mentions = discord.AllowedMentions.none()
 
@@ -28,6 +30,24 @@ bot_owner_id = config['bot_owner_id']
 server_name = config['server_name']
 server_ip = config['server_ip']
 server_port = config['server_port']
+github_repo = 'nmctl/lostworld-rewritten'
+branch = 'main'
+
+async def check_for_updates():
+    try:
+        latest = requests.get(f"https://api.github.com/repos/{github_repo}/commits/{branch}").json["sha"]
+        local = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
+        if latest = local:
+            return True
+        else:
+            return False
+
+async def check_updates_command(message):
+    await message.channel.send('Checking for updates...')
+    if await check_for_updates() == True:
+        await message.channel.send(f'Update available! Run {pf} to update to the newest version.')
+    else:
+        await message.channel.send('Bot is up to date.')
 
 async def format_help():
     # Read the contents of the text file
