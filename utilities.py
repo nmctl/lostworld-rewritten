@@ -52,10 +52,10 @@ async def check_updates_command(message):
         print(f'Local: {local}')
 
         if local != latest:
-            embed = create_embed(title="Update Available!", content=f"Branch: {branch}\nCommit hash: {latest}\nCommit message: {commit_message}")
+            embed = create_embed(title="Update Available!", description=f"Branch: {branch}\nCommit hash: {latest}\nCommit message: {commit_message}")
             await message.channel.send(embed=embed)
         else:
-            embed = create_embed(title="Bot is up to date.", content="No new updates found.")
+            embed = create_embed(title="Bot is up to date.", description="No new updates found.")
             await message.channel.send(embed=embed)
     except Exception as e:
         await message.channel.send(f'Checking for updates failed: {e}')
