@@ -95,7 +95,7 @@ async def version_command(message):
     commit_message = subprocess.check_output(['git', 'log', '-1', '--pretty=%B']).decode().strip()
     commit_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
 
-    embed = create_embed(title='Bot Version Info', description=f"Commit Message: {commit_message}\nCommit Hash: {commit_hash}", color=green)
+    embed = await create_embed(title='Bot Version Info', description=f"Commit Message: {commit_message}\nCommit Hash: {commit_hash}", color=green)
 
     await message.channel.send(embed=embed)
 
