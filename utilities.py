@@ -34,24 +34,36 @@ server_port = config['server_port']
 github_repo = 'nmctl/lostworld-rewritten'
 branch = 'master'
 
-async def check_for_updates():
-    try:
-        latest = requests.get(f"https://api.github.com/repos/{github_repo}/commits/{branch}").json()["sha"]
-        print(latest)
-        local = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
-        print(local)
-        if latest == local:
-            return False
-        else:
-            return True
-    except Exception as e:
-        print(f'Failed to check for updates: {e}')
-        return False
+# async def check_for_updates():
+#     try:
+#         latest = requests.get(f"https://api.github.com/repos/{github_repo}/commits/{branch}").json()["sha"]
+#         print(latest)
+#         local = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
+#         print(local)
+#         if latest == local:
+#             return False
+#         else:
+#             return True
+#     except Exception as e:
+#         print(f'Failed to check for updates: {e}')
+#         return False
 
 async def check_updates_command(message):
     await message.channel.send('Checking for updates...')
-    if await check_for_updates() == True:
-        await message.channel.send(f'Update available! Run `{pf}update` to update to the newest version.')
+    try:
+
+        latest = requests.get(f"https://api.github.com/repos/{github_repo}/commits/{branch}").json()["sha"]
+        message = requests.get(f"https://api.github.com/repos/{github_repo/commits/{branch}}").json()["message"]
+        print(f'Remote: {latest}')
+        print(f'Commit message: {message}')
+        local = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
+        print(f'Local: {local}')
+
+    if local != latest:
+        await message.channel.send(f"""
+Update Available!
+Commit hash: {latest}
+Commit message: {message}""")
     else:
         await message.channel.send('Bot is up to date.')
 
