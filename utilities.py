@@ -51,7 +51,7 @@ async def check_updates_command(message):
         latest = response.json()["sha"]
         commit_message = response.json()["commit"]["message"]
 
-        remote_version = requests.get("https://raw.githubusercontent.com/nmctl/lostworld-rewritten/master/VERSION")
+        remote_version = requests.get(f"https://raw.githubusercontent.com/nmctl/lostworld-rewritten/{branch}/VERSION")
         with open('VERSION', 'r') as versionfile:
             local_version = versionfile.read()
 
