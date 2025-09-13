@@ -28,7 +28,8 @@ Get (almost) full remote control over your minecraft server with this discord bo
   "server_ip": "your.server.ip",  // IP address for server display
   "server_port": 25565,  // Port for players to connect to your server
   "guild_id": "123456789012345678",  // Your Discord server (guild) ID
-  "discord_invite": "https://discord.gg/lostworld" // Your discord server invite
+  "discord_invite": "https://discord.gg/lostworld", // Your discord server invite
+  "branch": "master" // The branch you want to use (master for the stable version, dev for new features)
 }
 ```
   4. Install dependencies  

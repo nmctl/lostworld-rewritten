@@ -102,6 +102,8 @@ async def on_message(message):
                 await message.channel.send('Reloading...')
                 importlib.reload(utilities)
                 importlib.reload(fun)
+                importlib.reload(moderation)
+                config = utilities.load_config()
                 await message.channel.send('Reload complete.')
 
             elif content.startswith(f"{pf}startserver"):

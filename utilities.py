@@ -32,28 +32,14 @@ server_name = config['server_name']
 server_ip = config['server_ip']
 server_port = config['server_port']
 github_repo = 'nmctl/lostworld-rewritten'
-branch = 'master'
-
-# async def check_for_updates():
-#     try:
-#         latest = requests.get(f"https://api.github.com/repos/{github_repo}/commits/{branch}").json()["sha"]
-#         print(latest)
-#         local = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
-#         print(local)
-#         if latest == local:
-#             return False
-#         else:
-#             return True
-#     except Exception as e:
-#         print(f'Failed to check for updates: {e}')
-#         return False
+branch = config['branch']
 
 async def check_updates_command(message):
     await message.channel.send('Checking for updates...')
     try:
-
-        latest = requests.get(f"https://api.github.com/repos/{github_repo}/commits/{branch}").json()["sha"]
-        commit_message = requests.get(f"https://api.github.com/repos/{github_repo}/commits/{branch}").json()["commit"]["message"]
+        response = requests.get(f"https://api.github.com/repos/{github_repo}/commits/{branch}")
+        latest = response.json()["sha"]
+        commit_message = response.json()["commit"]["message"]
         print(f'Remote: {latest}')
         print(f'Commit message: {commit_message}')
         local = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
@@ -62,6 +48,7 @@ async def check_updates_command(message):
         if local != latest:
             await message.channel.send(f"""
 Update Available!
+Branch: {branch}
 Commit hash: {latest}
 Commit message: {commit_message}""")
         else:
@@ -70,12 +57,30 @@ Commit message: {commit_message}""")
         await message.channel.send(f'Checking for updates failed: {e}')
 
 async def update_command(message):
-    await message.channel.send('Updating...')
-    result = subprocess.run(["git", "pull"], capture_output=True, text=True)
-    await message.channel.send('Installing dependencies...')
-    subprocess.run([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
-    await message.channel.send('Installation finished, the bot will now restart')
-    os.execv(sys.executable, [sys.executable] + sys.argv)
+    await message.channel.send('Checking for updates...')
+
+    try:
+        response = requests.get(f"https://api.github.com/repos/{github_repo}/commits/{branch}")
+        latest = response.json()["sha"]
+        local = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
+        commit_message = response.json()["commit"]["message"]
+        if local == latest:
+            await message.channel.send(f'Bot is up to date (branch: {branch})')
+        else:
+            await message.channel.send(f"""
+Update Available!
+Branch: {branch}
+Commit hash: {latest}
+Commit message {commit_message}
+                                       """)
+            subprocess.run(['git', 'checkout', branch], check=True)
+            result = subprocess.run(["git", "pull"], capture_output=True, text=True)
+
+            await message.channel.send('Installing dependencies...')
+            subprocess.run([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
+
+            await message.channel.send('Installation finished, the bot will now restart')
+            os.execv(sys.executable, [sys.executable] + sys.argv)
 
 async def format_help():
     # Read the contents of the text file
