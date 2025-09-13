@@ -32,7 +32,7 @@ server_name = config['server_name']
 server_ip = config['server_ip']
 server_port = config['server_port']
 github_repo = 'nmctl/lostworld-rewritten'
-branch = 'main'
+branch = 'master'
 
 async def check_for_updates():
     try:
