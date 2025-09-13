@@ -41,7 +41,7 @@ async def create_embed(title, description, color, footer = None):
     color_int = int(color, 16)
     embed_color = discord.Color(color_int)
     embed = discord.Embed(title=title, description=description, color=embed_color)
-    embed.set_footer(footer)
+    embed.set_footer(text=footer)
 
     return embed
 
