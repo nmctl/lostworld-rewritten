@@ -172,7 +172,7 @@ async def ping(message, client):
 
 async def help(message):
     help_message = await format_help()
-    embed = create_embed(title=f"{server_name} Bot Commands", description=help_message, color=green, footer=f"Requested by {message.author.name}")
+    embed = await create_embed(title=f"{server_name} Bot Commands", description=help_message, color=green, footer=f"Requested by {message.author.name}")
     await message.channel.send(embed=embed)
 
 async def startserver(message, command):
