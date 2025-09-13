@@ -63,7 +63,7 @@ async def check_updates_command(message):
             await message.channel.send(f"""
 Update Available!
 Commit hash: {latest}
-Commit message: {message}""")
+Commit message: {commit_message}""")
         else:
             await message.channel.send('Bot is up to date.')
     except Exception as e:
