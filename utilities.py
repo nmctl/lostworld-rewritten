@@ -53,9 +53,9 @@ async def check_updates_command(message):
     try:
 
         latest = requests.get(f"https://api.github.com/repos/{github_repo}/commits/{branch}").json()["sha"]
-        message = requests.get(f"https://api.github.com/repos/{github_repo}/commits/{branch}").json()["message"]
+        commit_message = requests.get(f"https://api.github.com/repos/{github_repo}/commits/{branch}").json()["message"]
         print(f'Remote: {latest}')
-        print(f'Commit message: {message}')
+        print(f'Commit message: {commit_message}')
         local = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
         print(f'Local: {local}')
 
