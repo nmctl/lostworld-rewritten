@@ -59,13 +59,13 @@ async def check_updates_command(message):
         local = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
         print(f'Local: {local}')
 
-    if local != latest:
-        await message.channel.send(f"""
+        if local != latest:
+            await message.channel.send(f"""
 Update Available!
 Commit hash: {latest}
 Commit message: {message}""")
-    else:
-        await message.channel.send('Bot is up to date.')
+        else:
+            await message.channel.send('Bot is up to date.')
     except Exception as e:
         await message.channel.send(f'Checking for updates failed: {e}')
 
