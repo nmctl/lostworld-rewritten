@@ -38,7 +38,7 @@ yellow = config['yellow'].strip('#')
 green = config['green'].strip('#')
 
 async def create_embed(title, description, colour):
-    colour_int = int(color, 16)
+    colour_int = int(colour, 16)
     embed_colour = discord.Color(colour_int)
     embed = discord.Embed(title=title, description=description, color=embed_colour)
 
