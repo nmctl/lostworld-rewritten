@@ -172,9 +172,8 @@ async def ping(message, client):
 
 async def help(message):
     help_message = await format_help()
-    help_embed = discord.Embed(title=f'{server_name} Bot Commands', description=help_message)
-    help_embed.set_footer(text=f'Requested by {message.author.name}')
-    await message.channel.send(embed=help_embed)
+    embed = create_embed(title=f"{server_name} Bot Commands", description=help_message, color=green, footer=f"Requested by {message.author.name}")
+    await message.channel.send(embed=embed)
 
 async def startserver(message, command):
     await message.channel.send(f'Checking server status...')
