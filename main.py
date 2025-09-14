@@ -1,14 +1,13 @@
 import discord
 import importlib
-import tomllib  # Python 3.11+; otherwise use 'tomli'
+import tomllib
 import json
 import mcrcon
-
 import utilities
 import fun
 import moderation
 
-# --- Load config ---
+# load config
 config = utilities.load_config()
 prefix = config['prefix']
 token = config['token']
@@ -24,13 +23,13 @@ rcon_port = int(config['rcon_port'])
 rcon_password = config['rcon_password']
 server_start_command = config['server_start_command']
 
-# --- Load blacklisted and trusted users ---
+# load files
 with open('blacklisted_users.json') as f:
     blacklisted_users = json.load(f)
 with open('trusted_users.json') as f:
     trusted_users = json.load(f)
 
-# --- Load command registry and roles ---
+# load command registry and permission configuration
 with open("commands.toml", "rb") as f:
     commands_registry = tomllib.load(f)
 
@@ -38,14 +37,13 @@ with open("roles.toml", "rb") as f:
     roles_config = tomllib.load(f)
 role_map = roles_config.get("roles", {})
 
-# --- Intents and client ---
+# set up intents and the client
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
 
-# --- Deleted messages store ---
 deleted_embeds = {}
 
-# --- Helper functions ---
+# helper functions
 def get_user_permissions(member: discord.Member):
     perms = set(["everyone"])
     for role in member.roles:
@@ -62,15 +60,16 @@ async def run_command(cmd_name, message):
     user_perms = get_user_permissions(message.author)
     
     if required_perms.isdisjoint(user_perms) and message.author.id != bot_owner_id:
-        await message.channel.send("⛔ You don’t have permission to use this command.")
+        embed = utilities.create_embed(title="Permission denied", description="You don't have permission to use this command.", color=red, footer=f"Requested by {message.authoe.name}")
+        await message.channel.send(embed=embed)
         return
 
-    # Import module and function
+    # import module and function
     module_name, func_name = command_info["function"].rsplit(".", 1)
     module = importlib.import_module(module_name)
     func = getattr(module, func_name)
 
-    # Prepare extra args
+    # prepare extra args
     extra_args = []
     for arg in command_info.get("extra_args", []):
         if arg == "client":
@@ -84,7 +83,7 @@ async def run_command(cmd_name, message):
 
     await func(message, *extra_args)
 
-# --- Events ---
+# events
 @client.event
 async def on_ready():
     print(f"Logged in as {client.user}")
@@ -108,7 +107,7 @@ async def on_message(message):
 
     content = message.content
 
-    # --- RCON commands for bot owner ---
+    # rcon commands (bot owner only)
     if message.author.id == bot_owner_id:
         if content.startswith(rcon_prefix):
             mcr = mcrcon.MCRcon(port=rcon_port, host=rcon_host, password=rcon_password)
@@ -127,16 +126,16 @@ async def on_message(message):
             mcr.disconnect()
             return
 
-    # --- Blacklist check ---
+    # user blacklist checker
     if message.author.id in blacklisted_users and message.author.id != bot_owner_id:
         if content.startswith(prefix):
-            await message.channel.send("You are blacklisted.")
+            embed = utilities.create_embed(title="Permission denied", description="You are blacklisted from using the bot." color=red, footer=f"Requested by {message.author.name}")
+            await message.channel.send(embed=embed)
             return
 
-    # --- Run commands from registry ---
+    # run commands
     if content.startswith(prefix):
         cmd_name = content[len(prefix):].split()[0]
         await run_command(cmd_name, message)
 
-# --- Run bot ---
 client.run(token)

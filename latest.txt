@@ -1,1 +1,1 @@
-Beginning a new rewrite of the command parser that will help with the end goal of making the bot fully extensible and modular.
+Replaced permission denied messages with embeds for better readability.
