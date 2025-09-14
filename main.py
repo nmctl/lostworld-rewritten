@@ -1,183 +1,142 @@
 import discord
+import importlib
+import tomllib  # Python 3.11+; otherwise use 'tomli'
 import json
+import mcrcon
+
 import utilities
 import fun
-import mcrcon
-import importlib
 import moderation
 
-global deleted_embed
-
-# stuff
-deleted_embeds = {}
-blacklisted_file = open('blacklisted_users.json')
-blacklisted_file_path = 'blacklisted_users.json'
-trusted_file = open('trusted_users.json')
-trusted_file_path = 'trusted_users.json'
-blacklisted_users = json.load(blacklisted_file)
-trusted_users = json.load(trusted_file)
-
-# load config data and values
+# --- Load config ---
 config = utilities.load_config()
 prefix = config['prefix']
 token = config['token']
-logging_channel = config['logging_channel_id']
 bot_owner_id = int(config['bot_owner_id'])
+logging_channel_id = config['logging_channel_id']
 rcon_prefix = config['rcon_prefix']
 raw_rcon_prefix = config['raw_rcon_prefix']
 guild_id = config['guild_id']
 server_name = config['server_name']
-logging_channel_id = config['logging_channel_id']
-pf = prefix
-rpf = rcon_prefix
-rrpf = raw_rcon_prefix
 
-# rcon stuff
 rcon_host = config['rcon_host']
 rcon_port = int(config['rcon_port'])
 rcon_password = config['rcon_password']
 server_start_command = config['server_start_command']
 
+# --- Load blacklisted and trusted users ---
+with open('blacklisted_users.json') as f:
+    blacklisted_users = json.load(f)
+with open('trusted_users.json') as f:
+    trusted_users = json.load(f)
+
+# --- Load command registry and roles ---
+with open("commands.toml", "rb") as f:
+    commands_registry = tomllib.load(f)
+
+with open("roles.toml", "rb") as f:
+    roles_config = tomllib.load(f)
+role_map = roles_config.get("roles", {})
+
+# --- Intents and client ---
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
 
-# stuff to do at startup
+# --- Deleted messages store ---
+deleted_embeds = {}
+
+# --- Helper functions ---
+def get_user_permissions(member: discord.Member):
+    perms = set(["everyone"])
+    for role in member.roles:
+        if role.name in role_map:
+            perms.add(role_map[role.name])
+    return perms
+
+async def run_command(cmd_name, message):
+    if cmd_name not in commands_registry:
+        return
+
+    command_info = commands_registry[cmd_name]
+    required_perms = set(command_info.get("permissions", []))
+    user_perms = get_user_permissions(message.author)
+    
+    if required_perms.isdisjoint(user_perms) and message.author.id != bot_owner_id:
+        await message.channel.send("⛔ You don’t have permission to use this command.")
+        return
+
+    # Import module and function
+    module_name, func_name = command_info["function"].rsplit(".", 1)
+    module = importlib.import_module(module_name)
+    func = getattr(module, func_name)
+
+    # Prepare extra args
+    extra_args = []
+    for arg in command_info.get("extra_args", []):
+        if arg == "client":
+            extra_args.append(client)
+        elif arg == "deleted_embeds":
+            extra_args.append(deleted_embeds)
+        elif arg == "command":
+            extra_args.append(server_start_command)
+        elif arg == "target":
+            extra_args.append(message.mentions[0] if message.mentions else None)
+
+    await func(message, *extra_args)
+
+# --- Events ---
 @client.event
 async def on_ready():
-    print(f'Now logged in as {client.user}')
-    game = discord.Game("with the discord API")
-    await client.change_presence(status=discord.Status.online, activity=game)
+    print(f"Logged in as {client.user}")
+    await client.change_presence(status=discord.Status.online, activity=discord.Game("with the Discord API"))
     latency = round(client.latency * 1000, 2)
-    print(f'Ping: {latency} ms')
-    print('LW Bot Discord Server: https://discord.gg/VjaNJH6M7N')
     logging_channel = await client.fetch_channel(logging_channel_id)
-    await logging_channel.send(f'Lost World Bot is now starting for {server_name}. Join https://discord.gg/VjaNJH6M7N for support.')
-
-
-
-# bot event for commands
-@client.event
-async def on_message(message):
-    content = message.content
-    try:
-
-        if content.startswith(rpf) and message.author.id == bot_owner_id:
-            mcr = mcrcon.MCRcon(port=rcon_port, host=rcon_host, password=rcon_password)
-            mcr.connect()
-            command = message.content[1:]
-            response = await utilities.clean_response(mcr.command(command))
-            print(f"Server Response: {response}")
-            await message.channel.send(response)
-            mcr.disconnect()
-           
-        elif content.startswith(rrpf) and message.author.id == bot_owner_id:
-            mcr = mcrcon.MCRcon(port=rcon_port, host=rcon_host, password=rcon_password)
-            mcr.connect()
-            command = message.content[1:]
-            response = mcr.command(command)
-            print(f"Server Respose: {response}")
-            await message.channel.send(response)
-            mcr.disconnect()
-
-        elif content.startswith(prefix) and message.author.id in blacklisted_users and not message.author.id == bot_owner_id:
-            await message.channel.send('You are blacklisted.')
-            return
-
-        elif content.startswith(prefix) and not message.author.id in blacklisted_users:
-            
-            if content.startswith(f'{pf}snipe'):
-                await fun.snipe(message, deleted_embeds)
-
-            elif content.startswith(f"{pf}ping"):
-                await utilities.ping(message, client)
-
-            elif content.startswith(f"{pf}annoy"):
-                target = message.mentions[0]
-                await fun.annoy(message, target)
-
-            elif content.startswith(f"{pf}help"):
-                await utilities.help(message)
-
-            elif content.startswith(f"{pf}reload") and message.author.id == bot_owner_id:
-                await message.channel.send('Reloading...')
-                importlib.reload(utilities)
-                importlib.reload(fun)
-                importlib.reload(moderation)
-                config = utilities.load_config()
-                await message.channel.send('Reload complete.')
-
-            elif content.startswith(f"{pf}startserver"):
-                await utilities.startserver(message, command=server_start_command)
-
-            elif content.startswith(f"{pf}blacklist") and (message.author.id in trusted_users or message.author.id == bot_owner_id):
-                user = content.split()[1]
-                if not "@" in user:
-                    user = int(user)
-                else:
-                    user = int(user[2:-1])
-                if user == bot_owner_id: await message.channel.send("You cannot blacklist the bot owner.")
-                else: await utilities.add_user(message=message, content=content, user_list=blacklisted_users, file=blacklisted_file_path, list_name="blacklisted users")
-    # await utilities.save_blacklisted_users(blacklisted)
-
-            elif content.startswith(f"{pf}unblacklist") and (message.author.id in trusted_users or message.author.id == bot_owner_id):
-                await utilities.remove_user(message=message, content=content, user_list=blacklisted_users, file=blacklisted_file_path, list_name="blacklisted users")
-    # await utilities.save_blacklisted_users()
-
-            elif content.startswith(f"{pf}trust") and message.author.id == bot_owner_id:
-                await utilities.add_user(message=message, content=content, file=trusted_file_path, user_list=trusted_users, list_name="trusted users")
-
-            elif content.startswith(f"{pf}untrust") and message.author.id == bot_owner_id:
-                await utilities.remove_user(message=message, content=content, file=trusted_file_path, user_list=trusted_users, list_name="trusted users")
-
-            elif content.startswith(f"{pf}status"):
-                await utilities.fetch_status(message=message)
-
-            elif content.startswith(f"{pf}ban"):
-                await moderation.ban(message=message)
-
-            elif content.startswith(f"{pf}unban"):
-                await moderation.unban(message=message)
-
-            elif content.startswith(f"{pf}addrole"):
-                await moderation.add_role(message=message)
-
-            elif content.startswith(f"{pf}delrole"):
-                await moderation.remove_role(message=message)
-
-            elif content.startswith(f"{pf}killswitch") and message.author.id == bot_owner_id:
-                await utilities.killswitch(message)
-
-            elif content.startswith(f"{pf}setstatus"):
-                await utilities.set_status(message, client)
-
-            elif content.startswith(f"{pf}checkupdates") and message.author.id == bot_owner_id:
-                await utilities.check_updates_command(message)
-
-            elif content.startswith(f"{pf}update") and message.author.id == bot_owner_id:
-                await utilities.update_command(message)
-
-            elif content.startswith(f"{pf}version"):
-                await utilities.version_command(message)
-
-    except discord.RateLimited:
-        print('Rate limit detected')
-
-
-
+    await logging_channel.send(f'Lost World Bot starting for {server_name}. Ping: {latency} ms')
 
 @client.event
 async def on_message_delete(message):
-    global deleted_embeds  # Declare global dictionary to store embeds
+    embed = discord.Embed(title="Message Deleted", color=discord.Color.red())
+    embed.add_field(name="Author", value=message.author.name)
+    embed.add_field(name="Message", value=message.content)
+    embed.add_field(name="Channel", value=message.channel.name)
+    deleted_embeds[message.channel.id] = embed
 
-    # Create the embed when a message is deleted
-    deleted_embed = discord.Embed(title="Message Deleted", color=discord.Color.red())
-    deleted_embed.add_field(name="Author", value=message.author.name)
-    deleted_embed.add_field(name="Message", value=message.content)
-    deleted_embed.add_field(name="Channel", value=message.channel.name)
-    
-    # Store the embed in the dictionary by channel ID
-    deleted_embeds[message.channel.id] = deleted_embed
+@client.event
+async def on_message(message):
+    if message.author.bot:
+        return
 
+    content = message.content
+
+    # --- RCON commands for bot owner ---
+    if message.author.id == bot_owner_id:
+        if content.startswith(rcon_prefix):
+            mcr = mcrcon.MCRcon(port=rcon_port, host=rcon_host, password=rcon_password)
+            mcr.connect()
+            command = content[len(rcon_prefix):]
+            response = await utilities.clean_response(mcr.command(command))
+            await message.channel.send(response)
+            mcr.disconnect()
+            return
+        elif content.startswith(raw_rcon_prefix):
+            mcr = mcrcon.MCRcon(port=rcon_port, host=rcon_host, password=rcon_password)
+            mcr.connect()
+            command = content[len(raw_rcon_prefix):]
+            response = mcr.command(command)
+            await message.channel.send(response)
+            mcr.disconnect()
+            return
+
+    # --- Blacklist check ---
+    if message.author.id in blacklisted_users and message.author.id != bot_owner_id:
+        if content.startswith(prefix):
+            await message.channel.send("You are blacklisted.")
+            return
+
+    # --- Run commands from registry ---
+    if content.startswith(prefix):
+        cmd_name = content[len(prefix):].split()[0]
+        await run_command(cmd_name, message)
+
+# --- Run bot ---
 client.run(token)
-
-"thanks for using my bot :) (btw please join https://discord.gg/lostworld)"

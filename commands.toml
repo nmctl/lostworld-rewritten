@@ -1,0 +1,90 @@
+# Moderation commands
+[ban]
+function = "moderation.ban"
+permissions = ["admin", "moderator"]
+
+[unban]
+function = "moderation.unban"
+permissions = ["admin", "moderator"]
+
+[addrole]
+function = "moderation.add_role"
+permissions = ["admin", "moderator"]
+
+[delrole]
+function = "moderation.remove_role"
+permissions = ["admin", "moderator"]
+
+# Server commands
+[startserver]
+function = "utilities.startserver"
+permissions = ["admin", "trusted"]
+extra_args = ["command"]  # passes server_start_command from config
+
+# Fun commands
+[snipe]
+function = "fun.snipe"
+permissions = ["everyone"]
+extra_args = ["deleted_embeds"]
+
+[annoy]
+function = "fun.annoy"
+permissions = ["everyone"]
+extra_args = ["target"]
+
+# Utilities
+[ping]
+function = "utilities.ping"
+permissions = ["everyone"]
+extra_args = ["client"]
+
+[help]
+function = "utilities.help"
+permissions = ["everyone"]
+
+[status]
+function = "utilities.fetch_status"
+permissions = ["everyone"]
+
+[version]
+function = "utilities.version_command"
+permissions = ["everyone"]
+
+[checkupdates]
+function = "utilities.check_updates_command"
+permissions = ["bot_owner"]
+
+[update]
+function = "utilities.update_command"
+permissions = ["bot_owner"]
+
+[setstatus]
+function = "utilities.set_status"
+permissions = ["admin"]
+
+[killswitch]
+function = "utilities.killswitch"
+permissions = ["bot_owner"]
+
+# User management commands (blacklist/trust handled separately)
+[blacklist]
+function = "utilities.add_user"
+permissions = ["trusted", "bot_owner"]
+
+[unblacklist]
+function = "utilities.remove_user"
+permissions = ["trusted", "bot_owner"]
+
+[trust]
+function = "utilities.add_user"
+permissions = ["bot_owner"]
+
+[untrust]
+function = "utilities.remove_user"
+permissions = ["bot_owner"]
+
+# RCON commands (handled separately, only bot owner can run)
+[rcon]
+function = "utilities.rcon_command"
+permissions = ["bot_owner"]
+extra_args = ["command", "raw"]  # if you want to differentiate raw vs clean

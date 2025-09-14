@@ -1,0 +1,7 @@
+# role mapping, used in commands.toml
+
+[roles]
+Admin = "admin"
+Moderator = "moderator"
+Trusted = "trusted"
+Member = "member"

@@ -1,1 +1,1 @@
-Updated README.md to explain errors with config updates and modified the version and checkupdates command to show the latest changes.
+Beginning a new rewrite of the command parser that will help with the end goal of making the bot fully extensible and modular.
