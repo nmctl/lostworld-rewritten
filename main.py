@@ -129,7 +129,7 @@ async def on_message(message):
     # user blacklist checker
     if message.author.id in blacklisted_users and message.author.id != bot_owner_id:
         if content.startswith(prefix):
-            embed = utilities.create_embed(title="Permission denied", description="You are blacklisted from using the bot." color=red, footer=f"Requested by {message.author.name}")
+            embed = utilities.create_embed(title="Permission denied", description="You are blacklisted from using the bot.", color=red, footer=f"Requested by {message.author.name}")
             await message.channel.send(embed=embed)
             return
 
