@@ -68,19 +68,19 @@ permissions = ["bot_owner"]
 
 # User management commands (blacklist/trust handled separately)
 [blacklist]
-function = "utilities.add_user"
+function = "utilities.blacklist_user"
 permissions = ["trusted", "bot_owner"]
 
 [unblacklist]
-function = "utilities.remove_user"
+function = "utilities.unblacklist_user"
 permissions = ["trusted", "bot_owner"]
 
 [trust]
-function = "utilities.add_user"
+function = "utilities.trust_user"
 permissions = ["bot_owner"]
 
 [untrust]
-function = "utilities.remove_user"
+function = "utilities.untrust_user"
 permissions = ["bot_owner"]
 
 # RCON commands (handled separately, only bot owner can run)

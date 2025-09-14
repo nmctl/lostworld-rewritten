@@ -121,43 +121,90 @@ async def format_help():
 
     return formatted_content
 
+# user permission management stuff
 
-
-# function to save blacklisted users to blacklisted_users.json
-async def save_list(list, file):
-    with open(file, 'w') as list_file:
-        json.dump(list, list_file)
-
-async def add_user(message, content, user_list, file, list_name):
-    user_id = content.split()[1]
-    if not "@" in user_id:
-        user_id = int(user_id)
-    else:
+async def blacklist_user(message):
+    """Add a user to the blacklist"""
+    user_id = message.content.split()[1]
+    if "@" in user_id:
         user_id = int(user_id[2:-1])
-
-    if not str(user_id) in user_list and not user_id == bot_owner_id and not user_id in user_list:
-        user_list.append(user_id)
-        with open(file, 'w') as list_file:
-            json.dump(user_list, list_file)
-        
-        await message.channel.send(f"Added <@{user_id}> to {list_name}", allowed_mentions=disallow_mentions)
-    elif user_id in user_list:
-        await message.channel.send(f"<@{user_id}> is already in this list.", allowed_mentions=disallow_mentions)
-    elif user_id == bot_owner_id:
-        await message.channel.send(f"You cannot add the bot owner to lists.", allowed_mentions=disallow_mentions)
-
-async def remove_user(message, content, user_list, file, list_name):
-    user_id = content.split()[1]
-    if not "@" in user_id:
-        user_id = int(user_id)
     else:
-        user_id = int(user_id[2:-1])
+        user_id = int(user_id)
 
-    if not str(user_id) in user_list and not user_id == bot_owner_id:
-        user_list.remove(user_id)
-        with open(file, 'w') as list_file:
-            json.dump(user_list, list_file)
-        await message.channel.send(f"Removed <@{user_id}> from {list_name}", allowed_mentions=disallow_mentions)
+    if user_id == bot_owner_id:
+        await message.channel.send("You cannot blacklist the bot owner.", allowed_mentions=disallow_mentions)
+        return
+
+    if user_id in blacklisted_users:
+        await message.channel.send(f"<@{user_id}> is already blacklisted.", allowed_mentions=disallow_mentions)
+        return
+
+    blacklisted_users.append(user_id)
+    with open("blacklisted_users.json", "w") as f:
+        json.dump(blacklisted_users, f)
+    
+    await message.channel.send(f"Added <@{user_id}> to the blacklist.", allowed_mentions=disallow_mentions)
+
+
+async def unblacklist_user(message):
+    """Remove a user from the blacklist"""
+    user_id = message.content.split()[1]
+    if "@" in user_id:
+        user_id = int(user_id[2:-1])
+    else:
+        user_id = int(user_id)
+
+    if user_id not in blacklisted_users:
+        await message.channel.send(f"<@{user_id}> is not in the blacklist.", allowed_mentions=disallow_mentions)
+        return
+
+    blacklisted_users.remove(user_id)
+    with open("blacklisted_users.json", "w") as f:
+        json.dump(blacklisted_users, f)
+    
+    await message.channel.send(f"Removed <@{user_id}> from the blacklist.", allowed_mentions=disallow_mentions)
+
+
+async def trust_user(message):
+    """Add a user to the trusted users list"""
+    user_id = message.content.split()[1]
+    if "@" in user_id:
+        user_id = int(user_id[2:-1])
+    else:
+        user_id = int(user_id)
+
+    if user_id == bot_owner_id:
+        await message.channel.send("You cannot modify the bot owner.", allowed_mentions=disallow_mentions)
+        return
+
+    if user_id in trusted_users:
+        await message.channel.send(f"<@{user_id}> is already trusted.", allowed_mentions=disallow_mentions)
+        return
+
+    trusted_users.append(user_id)
+    with open("trusted_users.json", "w") as f:
+        json.dump(trusted_users, f)
+    
+    await message.channel.send(f"Added <@{user_id}> to trusted users.", allowed_mentions=disallow_mentions)
+
+
+async def untrust_user(message):
+    """Remove a user from the trusted users list"""
+    user_id = message.content.split()[1]
+    if "@" in user_id:
+        user_id = int(user_id[2:-1])
+    else:
+        user_id = int(user_id)
+
+    if user_id not in trusted_users:
+        await message.channel.send(f"<@{user_id}> is not trusted.", allowed_mentions=disallow_mentions)
+        return
+
+    trusted_users.remove(user_id)
+    with open("trusted_users.json", "w") as f:
+        json.dump(trusted_users, f)
+    
+    await message.channel.send(f"Removed <@{user_id}> from trusted users.", allowed_mentions=disallow_mentions)
     
 
 

@@ -1,1 +1,1 @@
-Replaced permission denied messages with embeds for better readability.
+Separated the add_user() and remove_user() functions into different functions for blacklisting, unblacklisting, trusting and untrusting users to help with the improved command parser.
