@@ -17,6 +17,9 @@ rcon_prefix = config['rcon_prefix']
 raw_rcon_prefix = config['raw_rcon_prefix']
 guild_id = config['guild_id']
 server_name = config['server_name']
+red = config['red']
+yellow = config['yellow']
+green = config['green']
 
 rcon_host = config['rcon_host']
 rcon_port = int(config['rcon_port'])
