@@ -4,6 +4,7 @@ import tomllib
 import json
 import mcrcon
 import utilities
+from utilities import blacklisted_users
 import fun
 import moderation
 
@@ -25,12 +26,6 @@ rcon_host = config['rcon_host']
 rcon_port = int(config['rcon_port'])
 rcon_password = config['rcon_password']
 server_start_command = config['server_start_command']
-
-# load files
-with open('blacklisted_users.json') as f:
-    blacklisted_users = json.load(f)
-with open('trusted_users.json') as f:
-    trusted_users = json.load(f)
 
 # load command registry and permission configuration
 with open("commands.toml", "rb") as f:
