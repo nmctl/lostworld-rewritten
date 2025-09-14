@@ -63,7 +63,7 @@ async def run_command(cmd_name, message):
     user_perms = get_user_permissions(message.author)
     
     if required_perms.isdisjoint(user_perms) and message.author.id != bot_owner_id:
-        embed = utilities.create_embed(title="Permission denied", description="You don't have permission to use this command.", color=red, footer=f"Requested by {message.author.name}")
+        embed = await utilities.create_embed(title="Permission denied", description="You don't have permission to use this command.", color=red, footer=f"Requested by {message.author.name}")
         await message.channel.send(embed=embed)
         return
 
@@ -132,7 +132,7 @@ async def on_message(message):
     # user blacklist checker
     if message.author.id in blacklisted_users and message.author.id != bot_owner_id:
         if content.startswith(prefix):
-            embed = utilities.create_embed(title="Permission denied", description="You are blacklisted from using the bot.", color=red, footer=f"Requested by {message.author.name}")
+            embed = await utilities.create_embed(title="Permission denied", description="You are blacklisted from using the bot.", color=red, footer=f"Requested by {message.author.name}")
             await message.channel.send(embed=embed)
             return
 
