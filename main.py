@@ -63,7 +63,7 @@ async def run_command(cmd_name, message):
     user_perms = get_user_permissions(message.author)
     
     if required_perms.isdisjoint(user_perms) and message.author.id != bot_owner_id:
-        embed = utilities.create_embed(title="Permission denied", description="You don't have permission to use this command.", color=red, footer=f"Requested by {message.authoe.name}")
+        embed = utilities.create_embed(title="Permission denied", description="You don't have permission to use this command.", color=red, footer=f"Requested by {message.author.name}")
         await message.channel.send(embed=embed)
         return
 
