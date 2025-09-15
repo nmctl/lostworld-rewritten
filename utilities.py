@@ -51,14 +51,14 @@ async def check_updates_command(message):
         latest = response.json()["sha"]
         commit_message = response.json()["commit"]["message"]
 
-        remote_version = requests.get(f"https://raw.githubusercontent.com/nmctl/lostworld-rewritten/{branch}/VERSION").text
+        remote_version = requests.get(f"https://raw.githubusercontent.com/nmctl/lostworld-rewritten/{branch}/VERSION").text.strip()
         remote_update = requests.get(f"https://raw.githubusercontent.com/nmctl/lostworld-rewritten/{branch}/latest.txt").text
 
         with open('VERSION', 'r') as versionfile:
             local_version = versionfile.read()
 
         print(f'Remote: {latest}')
-        print(f'Commit message: {commit_message}').strip()
+        print(f'Commit message: {commit_message}')
         local = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
         print(f'Local: {local}')
 
