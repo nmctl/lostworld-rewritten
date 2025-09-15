@@ -58,7 +58,7 @@ async def check_updates_command(message):
             local_version = versionfile.read()
 
         print(f'Remote: {latest}')
-        print(f'Commit message: {commit_message}')
+        print(f'Commit message: {commit_message}').strip()
         local = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
         print(f'Local: {local}')
 
