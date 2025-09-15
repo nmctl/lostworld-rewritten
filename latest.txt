@@ -1,1 +1,3 @@
-Separated the add_user() and remove_user() functions into different functions for blacklisting, unblacklisting, trusting and untrusting users to help with the improved command parser.
+1. Replaced the command parser with a new one that uses a command registry file
+2. Trusted users now require a role instead of a trusted_users.json file
+   You will be required to create a role called "Trusted" or another name and then edit it inside the roles.toml file.
