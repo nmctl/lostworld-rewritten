@@ -108,7 +108,7 @@ async def version_command(message):
     with open('latest.txt', 'r') as latestfile:
         latest_update = latestfile.read()
 
-    embed = await create_embed(title='Bot Version Info', description=f"Commit Message: {commit_message}\nCommit Hash: {commit_hash}\nVersion: {version}\nChanges: {latest_update}", color=green, footer="Tip: use the `{pf}checkupdates` command to check for updates.")
+    embed = await create_embed(title='Bot Version Info', description=f"Commit Message: {commit_message}\nCommit Hash: {commit_hash}\nVersion: {version}\nChanges: {latest_update}", color=green, footer=f"Tip: use the `{pf}checkupdates` command to check for updates.")
 
     await message.channel.send(embed=embed)
 
